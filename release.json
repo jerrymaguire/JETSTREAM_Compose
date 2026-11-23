@@ -1,0 +1,23 @@
+{
+  "release_id": "local-20261122.1",
+  "agent_image": "sha256:8ad7ff223d27c281e9ad04b43e2e35c7de910386f41469724c578bd4d28a4d71",
+  "gateway_image": "ghcr.io/berriai/litellm@sha256:ef798594ca3db8d81bad2e1439f536f49b71fe095ee9f20416f5e149b4e22035",
+  "prometheus_image": "prom/prometheus@sha256:6559acbd5d770b15bb3c954629ce190ac3cbbdb2b7f1c30f0385c4e05104e218",
+  "grafana_image": "grafana/grafana@sha256:d8ea37798ccc41061a62ab080f2676dda6bf7815558499f901bdb0f533a456fb",
+  "node_base_image": "node@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54",
+  "model_alias": "deepseek-flash",
+  "upstream_model": "deepseek/deepseek-v4-flash",
+  "config_files": {
+    "docker-compose.yml": "sha256:b14c4a741405d165b784ba2157da4b83754d10b8b30c9808f72e90877441bd95",
+    "gateway/config.yaml": "sha256:c4a20a0f04227731b446a7e8ab6eac15a76bec15c9bbadf06d435a32f42fcf77",
+    "prometheus/prometheus.yml": "sha256:a02fbb6d85b074315d36c284447f32076c089dc307d2e49d8e367395ae0aa298",
+    "grafana/dashboards/agent-compose.json": "sha256:01580ea09cf2bfd046ae1e64cf3f715e9e3ded3470f7c3400d9216e5503f0e05",
+    "grafana/provisioning/datasources/prometheus.yml": "sha256:6af5a7c2464093242c0634f974f2fe6071a4e115e4643b02fd28624ace520a49",
+    "grafana/provisioning/dashboards/agent-compose.yml": "sha256:87fd681f4b66bc0ba8f88aca28ddca1623c48e4fc1da32dae9eb37c909f380ec",
+    "grafana/provisioning/alerting/agent-compose-alerts.yml": "sha256:91d1d8c160568e705e65101db713d9328bcdf2c77f6b81ec071e370c06d4e0b4",
+    "agent/public/index.html": "sha256:50e376ae87adaae3ec9732faf3793d698fac594bc28718430081d4c4bd52409b",
+    "agent/public/styles.css": "sha256:165f99602fcda4adde9c2ff0a257a0a08d9becdc2467d7adace7d299a39ad21e",
+    "agent/public/app.js": "sha256:ee1e7787c5cf8ad584ff13775676751d2684ecfa15f542c27fcde5ed3d0a64cc",
+    "agent/public/favicon.svg": "sha256:74a126fc5d2f78e6e91095332c1855d5deed0bc239402d122e5e6f109764dfda"
+  }
+}

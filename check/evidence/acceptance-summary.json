@@ -1,0 +1,140 @@
+{
+  "started_at": "2026-11-23T22:54:28.0356883+08:00",
+  "services": [
+    {
+      "service": "agent",
+      "health": "healthy"
+    },
+    {
+      "service": "gateway",
+      "health": "healthy"
+    },
+    {
+      "service": "grafana",
+      "health": "healthy"
+    },
+    {
+      "service": "prometheus",
+      "health": "healthy"
+    }
+  ],
+  "probes": [
+    {
+      "url": "http://127.0.0.1:4000/health/liveliness",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8080/health",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:9090/-/healthy",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:8765/api/health",
+      "status": 200
+    }
+  ],
+  "targets": [
+    {
+      "job": "agent",
+      "health": "up",
+      "scrape_url": "http://agent:8080/metrics"
+    },
+    {
+      "job": "gateway",
+      "health": "up",
+      "scrape_url": "http://gateway:4000/metrics"
+    },
+    {
+      "job": "prometheus",
+      "health": "up",
+      "scrape_url": "http://localhost:9090/metrics"
+    }
+  ],
+  "gateway": {
+    "status": "completed",
+    "finish_reason": "stop",
+    "content_length": 37,
+    "metrics_bytes": 134992
+  },
+  "sync_run": {
+    "run_id": "dfe6ee09-f9bd-4811-aa6a-6948cbae5004",
+    "status": "completed",
+    "output_length": 79,
+    "total_tokens": 2181
+  },
+  "async_run": {
+    "run_id": "0a1742cd-9564-4e7b-a916-3552ca3344f6",
+    "status": "completed",
+    "output_length": 2085,
+    "total_tokens": 3507
+  },
+  "metrics": {
+    "baseline": {
+      "source": "direct metrics",
+      "gateway_requests": 26.0,
+      "agent_runs": 4.0
+    },
+    "after_sync": {
+      "source": "direct metrics + Prometheus",
+      "gateway_requests": 27.0,
+      "agent_runs": 5.0,
+      "gateway_prometheus": 27.0,
+      "agent_prometheus": 5.0
+    }
+  },
+  "grafana": {
+    "datasource_uid": "agent-prometheus",
+    "dashboard_uid": "agentcompose-overview",
+    "dashboard_url": "http://127.0.0.1:8765/d/agentcompose-overview/agentcompose-overview",
+    "anonymous_root_status": 200,
+    "anonymous_view": true
+  },
+  "agent_harness": {
+    "tools": [
+      "web_search",
+      "web_fetch",
+      "workspace_list",
+      "workspace_read",
+      "workspace_write",
+      "update_plan",
+      "load_skill",
+      "read_skill_file"
+    ],
+    "skills": [
+      "artifact-writer",
+      "software-delivery-architect",
+      "software-delivery-backend",
+      "software-delivery-base",
+      "software-delivery-dba",
+      "software-delivery-frontend",
+      "software-delivery-mobile",
+      "software-delivery-ops",
+      "software-delivery-pm",
+      "software-delivery-reverse-design",
+      "software-delivery-tester",
+      "task-planning",
+      "web-research"
+    ],
+    "max_loop_turns": 8,
+    "max_tool_calls": 16,
+    "streaming": true,
+    "attachment_kinds": [
+      "markdown",
+      "text",
+      "html",
+      "docx",
+      "pdf",
+      "web"
+    ]
+  },
+  "screenshot": "D:\\wj\\projects\\AI\\GeekAgent\\Week6\\AgentCompose\\check\\evidence\\grafana-dashboard.png",
+  "agent_ui": {
+    "url": "http://127.0.0.1:8080/ui/",
+    "status": 200
+  },
+  "finished_at": "2026-11-23T22:55:00.1721642+08:00",
+  "status": "passed"
+}

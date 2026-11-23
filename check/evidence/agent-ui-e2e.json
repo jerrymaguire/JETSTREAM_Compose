@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:8080/ui/",
+  "desktopScreenshot": "D:\\wj\\projects\\AI\\GeekAgent\\Week6\\AgentCompose\\check\\evidence\\agent-ui.png",
+  "mobileScreenshot": "D:\\wj\\projects\\AI\\GeekAgent\\Week6\\AgentCompose\\check\\evidence\\agent-ui-mobile.png",
+  "streamingObserved": true,
+  "outputLength": 195,
+  "eventCount": 15,
+  "conversationTurns": 2,
+  "sessionId": "session-ui-d0920bc19d904c548b07",
+  "attachmentUploaded": true,
+  "skillReference": "artifact-writer",
+  "sessionDeleteVerified": true,
+  "browserErrors": []
+}

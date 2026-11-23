@@ -1,0 +1,85 @@
+{
+  "status": "passed",
+  "internet_run": {
+    "run_id": "9e1ad4ab-7750-41ea-bbdc-ecb64f0a40ae",
+    "status": "completed",
+    "loop_turns": 6,
+    "tool_calls_total": 8,
+    "tools_used": [
+      "update_plan",
+      "web_search",
+      "web_fetch"
+    ],
+    "plan_steps": 3,
+    "total_tokens": 8198
+  },
+  "artifact_run": {
+    "run_id": "9581306a-93aa-4b49-8171-6b7ddc364984",
+    "status": "completed",
+    "loop_turns": 4,
+    "tool_calls_total": 3,
+    "tools_used": [
+      "load_skill",
+      "workspace_write",
+      "workspace_read"
+    ],
+    "skills_used": [
+      "artifact-writer"
+    ],
+    "artifact": "/workspace/reports/deepseek-harness.md",
+    "total_tokens": 4600
+  },
+  "capabilities": {
+    "tools": 8,
+    "skills": 13,
+    "max_loop_turns": 8,
+    "max_tool_calls": 16,
+    "streaming": true,
+    "attachment_kinds": [
+      "markdown",
+      "text",
+      "html",
+      "docx",
+      "pdf",
+      "web"
+    ]
+  },
+  "final_image_smoke": {
+    "run_id": "527d47e5-93e5-42c4-9a36-7c1211d5659a",
+    "status": "completed",
+    "loop_turns": 3,
+    "tool_calls_total": 3,
+    "tools_used": [
+      "web_search",
+      "web_fetch"
+    ],
+    "output_contains_url": true
+  },
+  "document_input": {
+    "run_id": "fb7acba3-27f9-4c35-9ae7-dc03ab6807e1",
+    "status": "completed",
+    "attachments": [
+      "sample.docx:docx",
+      "sample.pdf:pdf",
+      "notes.md:markdown"
+    ],
+    "skills_used": [
+      "artifact-writer"
+    ],
+    "loop_turns": 4
+  },
+  "web_input": {
+    "run_id": "ebd80216-3340-4747-b11a-6c02c2212ea3",
+    "status": "completed",
+    "source": "https://example.com/",
+    "kind": "web"
+  },
+  "ui_streaming": {
+    "status": "passed",
+    "streaming_observed": true,
+    "attachment_uploaded": true,
+    "skill_reference": "artifact-writer",
+    "session_id": "session-ui-d0920bc19d904c548b07",
+    "browser_errors": []
+  }
+}

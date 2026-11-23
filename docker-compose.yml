@@ -1,0 +1,186 @@
+name: agentcompose
+
+services:
+  gateway:
+    image: ghcr.io/berriai/litellm:main-stable@sha256:ef798594ca3db8d81bad2e1439f536f49b71fe095ee9f20416f5e149b4e22035
+    restart: unless-stopped
+    command:
+      - --config
+      - /app/config.yaml
+      - --port
+      - "4000"
+    environment:
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY is required}
+      DEEPSEEK_API_BASE: ${DEEPSEEK_API_BASE:-https://api.deepseek.com}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+      LITELLM_LOG: INFO
+    volumes:
+      - ./gateway/config.yaml:/app/config.yaml:ro
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT:-4000}:4000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python -c "import urllib.request,sys;
+          sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness', timeout=3).status==200 else 1)"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - agent-compose-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      AGENT_PORT: "8080"
+      AGENT_HOST: 0.0.0.0
+      AGENT_DATA_DIR: /app/data
+      AGENT_WORKSPACE_DIR: /workspace
+      GATEWAY_BASE_URL: http://gateway:4000
+      GATEWAY_API_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+      AGENT_MODEL: ${AGENT_MODEL:-deepseek-flash}
+      AGENT_MAX_CONCURRENCY: ${AGENT_MAX_CONCURRENCY:-4}
+      AGENT_QUEUE_CAPACITY: ${AGENT_QUEUE_CAPACITY:-32}
+      AGENT_QUEUE_TIMEOUT_MS: ${AGENT_QUEUE_TIMEOUT_MS:-2000}
+      AGENT_RUN_TIMEOUT_MS: ${AGENT_RUN_TIMEOUT_MS:-90000}
+      AGENT_GATEWAY_TIMEOUT_MS: ${AGENT_GATEWAY_TIMEOUT_MS:-80000}
+      AGENT_MAX_LOOP_TURNS: ${AGENT_MAX_LOOP_TURNS:-8}
+      AGENT_MAX_TOOL_CALLS: ${AGENT_MAX_TOOL_CALLS:-16}
+      AGENT_TOOL_TIMEOUT_MS: ${AGENT_TOOL_TIMEOUT_MS:-20000}
+      AGENT_WEB_FETCH_MAX_BYTES: ${AGENT_WEB_FETCH_MAX_BYTES:-1000000}
+      AGENT_TOOL_OUTPUT_MAX_CHARS: ${AGENT_TOOL_OUTPUT_MAX_CHARS:-20000}
+      AGENT_ATTACHMENT_MAX_BYTES: ${AGENT_ATTACHMENT_MAX_BYTES:-8000000}
+      AGENT_ATTACHMENT_TOTAL_MAX_BYTES: ${AGENT_ATTACHMENT_TOTAL_MAX_BYTES:-20000000}
+      AGENT_ATTACHMENT_MAX_CHARS: ${AGENT_ATTACHMENT_MAX_CHARS:-50000}
+      AGENT_ATTACHMENT_TOTAL_MAX_CHARS: ${AGENT_ATTACHMENT_TOTAL_MAX_CHARS:-120000}
+      AGENT_ATTACHMENT_COUNT_LIMIT: ${AGENT_ATTACHMENT_COUNT_LIMIT:-8}
+      AGENT_SKILLS_DIR: /app/skills
+      RELEASE_ID: ${RELEASE_ID:-local-20261122.1}
+    volumes:
+      - agent-data:/app/data
+      - agent-workspace:/workspace
+      - ./release.json:/app/release.json:ro
+    ports:
+      - "127.0.0.1:${AGENT_PORT:-8080}:8080"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      - agent-compose-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  prometheus:
+    image: prom/prometheus:v3.1.0@sha256:6559acbd5d770b15bb3c954629ce190ac3cbbdb2b7f1c30f0385c4e05104e218
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        umask 077
+        printf '%s' "$$LITELLM_MASTER_KEY" > /tmp/prometheus_gateway_token
+        exec /bin/prometheus \
+          --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/prometheus \
+          --web.listen-address=0.0.0.0:9090 \
+          --web.enable-lifecycle
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    depends_on:
+      gateway:
+        condition: service_healthy
+      agent:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://127.0.0.1:9090/-/healthy >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      - agent-compose-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:11.4.0@sha256:d8ea37798ccc41061a62ab080f2676dda6bf7815558499f901bdb0f533a456fb
+    restart: unless-stopped
+    environment:
+      GF_SERVER_HTTP_ADDR: 0.0.0.0
+      GF_SERVER_HTTP_PORT: "8765"
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_ORG_NAME: Main Org.
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/agent-compose.json
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-8765}:8765"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://127.0.0.1:8765/api/health >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 30s
+    networks:
+      - agent-compose-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  agent-compose-net:
+    name: agent-compose-net
+
+volumes:
+  agent-data:
+  agent-workspace:
+  prometheus-data:
+  grafana-data:

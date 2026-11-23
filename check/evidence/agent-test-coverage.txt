@@ -1,0 +1,74 @@
+
+> agentcompose-agent@1.0.0 test:coverage
+> npm run build && c8 --all --src dist/src --include "dist/src/**/*.js" --exclude "dist/src/index.js" --exclude "dist/src/types.js" --reporter=text --reporter=json-summary node --test "dist/tests/*.test.js"
+
+
+> agentcompose-agent@1.0.0 build
+> tsc -p tsconfig.json
+
+✔ loadConfig applies defaults and resolves directories (5.3168ms)
+✔ loadConfig rejects missing key and invalid bounded integers (2.5314ms)
+✔ loadConfig strips trailing slashes from the gateway URL (0.5458ms)
+✔ prepareAttachments extracts Markdown, DOCX and PDF text (2168.9149ms)
+✔ prepareAttachments rejects unsupported or excessive files (9.2865ms)
+✔ health returns release metadata (94.6664ms)
+✔ capabilities returns tools, skills and execution limits (10.3783ms)
+✔ invalid input returns a structured 400 (15.8192ms)
+✔ sync run returns completed output and can be queried (102.1519ms)
+✔ run accepts Markdown attachments and persists the raw file (104.2599ms)
+✔ run list and event history support the workbench (28.62ms)
+✔ UI assets are served from the Agent container (11.6932ms)
+✔ session delete removes the conversation from history (113.8654ms)
+✔ async run returns 202 and reaches completed (62.2454ms)
+✔ events endpoint returns SSE terminal state (80.713ms)
+✔ metrics endpoint exposes required metric names (93.6704ms)
+✔ unknown and invalid routes return structured errors (6.1701ms)
+✔ structured logger writes valid JSON to stdout and stderr (15.2575ms)
+✔ Metrics exports required Agent and model metrics (24.789ms)
+✔ PiAgentRunner streams through an OpenAI-compatible mock gateway (950.661ms)
+✔ referencedSkillNames resolves known @skill references (0.853ms)
+✔ PiAgentRunner executes a PI tool loop and exposes the plan (108.8379ms)
+✔ RunService completes a synchronous run and persists events (105.0416ms)
+✔ RunService bounds concurrency and rejects when the queue is full (163.2106ms)
+✔ RunService fails queued work after queue timeout (156.9721ms)
+✔ RunService maps runner failures to a failed Run (71.6196ms)
+✔ RunService reuses a session and supplies previous turns as history (154.4122ms)
+✔ parseSkillMarkdown reads Agent Skills frontmatter (4.2873ms)
+✔ SkillRegistry loads instructions and scoped reference files (71.2039ms)
+✔ SkillRegistry ignores malformed skills (21.9117ms)
+✔ RunStore persists results and append-only events (77.4713ms)
+✔ RunStore marks unfinished runs interrupted after restart (59.9913ms)
+✔ RunStore lists newest run results first (95.8981ms)
+✔ RunStore rejects unsafe run identifiers (3.7385ms)
+✔ RunStore deletes every run in a session (60.2253ms)
+✔ workspace tools write, list and read artifacts inside the workspace (56.3816ms)
+✔ plan and skill tools update run-visible state (62.1639ms)
+✔ parseDuckDuckGoResults extracts titles, URLs and snippets (10.1769ms)
+✔ htmlToText removes executable markup and normalizes whitespace (0.8292ms)
+✔ validatePublicUrl blocks local, private and credential URLs (3.7435ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3272.0414
+----------------|---------|----------|---------|---------|------------------------------------------
+File            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                        
+----------------|---------|----------|---------|---------|------------------------------------------
+All files       |   84.08 |    70.09 |    86.4 |   84.08 |                                          
+ config.ts      |     100 |    77.41 |     100 |     100 | 44,47-103                                
+ documents.ts   |   80.45 |    74.57 |     100 |   80.45 | ...3-198,209-210,213-218,227-232,235-240 
+ errors.ts      |     100 |       60 |     100 |     100 | 37                                       
+ http.ts        |   81.26 |    68.22 |   84.61 |   81.26 | ...0-255,287,347,365-374,378-382,405-407 
+ logger.ts      |     100 |      100 |     100 |     100 |                                          
+ metrics.ts     |     100 |      100 |     100 |     100 |                                          
+ pi-runner.ts   |   79.88 |    63.07 |      75 |   79.88 | ...7-298,301-302,304-310,312-313,316-317 
+ run-service.ts |   83.77 |    76.25 |   77.77 |   83.77 | ...3,378-382,385,388-394,452-455,506-534 
+ safe-path.ts   |   85.71 |    58.82 |     100 |   85.71 | 34-37,40-41                              
+ skills.ts      |   97.31 |    68.96 |     100 |   97.31 | 37-38,89-90                              
+ store.ts       |   94.44 |    76.92 |     100 |   94.44 | 38-44,46,164-166                         
+ tools.ts       |   92.49 |    61.22 |   84.61 |   92.49 | 115-127,144-153,215-216                  
+ web.ts         |   46.01 |    58.62 |   54.54 |   46.01 | ...5-116,127-160,162-178,181-196,199-226 
+----------------|---------|----------|---------|---------|------------------------------------------

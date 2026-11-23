@@ -1,0 +1,94 @@
+{
+  "status": "success",
+  "data": {
+    "activeTargets": [
+      {
+        "discoveredLabels": {
+          "__address__": "agent:8080",
+          "__metrics_path__": "/metrics",
+          "__scheme__": "http",
+          "__scrape_interval__": "15s",
+          "__scrape_timeout__": "10s",
+          "job": "agent",
+          "layer": "application",
+          "service": "agent"
+        },
+        "labels": {
+          "instance": "agent:8080",
+          "job": "agent",
+          "layer": "application",
+          "service": "agent"
+        },
+        "scrapePool": "agent",
+        "scrapeUrl": "http://agent:8080/metrics",
+        "globalUrl": "http://agent:8080/metrics",
+        "lastError": "",
+        "lastScrape": "2026-11-23T14:59:07.739036597Z",
+        "lastScrapeDuration": 0.005887451,
+        "health": "up",
+        "scrapeInterval": "15s",
+        "scrapeTimeout": "10s"
+      },
+      {
+        "discoveredLabels": {
+          "__address__": "gateway:4000",
+          "__metrics_path__": "/metrics",
+          "__scheme__": "http",
+          "__scrape_interval__": "15s",
+          "__scrape_timeout__": "10s",
+          "job": "gateway",
+          "layer": "gateway",
+          "service": "gateway"
+        },
+        "labels": {
+          "instance": "gateway:4000",
+          "job": "gateway",
+          "layer": "gateway",
+          "service": "gateway"
+        },
+        "scrapePool": "gateway",
+        "scrapeUrl": "http://gateway:4000/metrics",
+        "globalUrl": "http://gateway:4000/metrics",
+        "lastError": "",
+        "lastScrape": "2026-11-23T14:59:05.952363609Z",
+        "lastScrapeDuration": 0.026032316,
+        "health": "up",
+        "scrapeInterval": "15s",
+        "scrapeTimeout": "10s"
+      },
+      {
+        "discoveredLabels": {
+          "__address__": "localhost:9090",
+          "__metrics_path__": "/metrics",
+          "__scheme__": "http",
+          "__scrape_interval__": "15s",
+          "__scrape_timeout__": "10s",
+          "job": "prometheus",
+          "layer": "monitoring",
+          "service": "prometheus"
+        },
+        "labels": {
+          "instance": "localhost:9090",
+          "job": "prometheus",
+          "layer": "monitoring",
+          "service": "prometheus"
+        },
+        "scrapePool": "prometheus",
+        "scrapeUrl": "http://localhost:9090/metrics",
+        "globalUrl": "http://169bb067eebc:9090/metrics",
+        "lastError": "",
+        "lastScrape": "2026-11-23T14:59:14.073368333Z",
+        "lastScrapeDuration": 0.007033107,
+        "health": "up",
+        "scrapeInterval": "15s",
+        "scrapeTimeout": "10s"
+      }
+    ],
+    "droppedTargets": [],
+    "droppedTargetCounts": {
+      "agent": 0,
+      "gateway": 0,
+      "prometheus": 0
+    }
+  }
+}

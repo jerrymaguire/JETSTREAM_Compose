@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <title>AgentCompose Workbench</title>
+    <link rel="icon" href="/ui/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="menu-button" class="icon-button mobile-only" type="button" aria-label="打开 Run 列表">
+          <i data-lucide="menu"></i>
+        </button>
+        <a class="brand" href="/ui/" aria-label="AgentCompose 首页">
+          <span class="brand-mark"><i data-lucide="boxes"></i></span>
+          <span>
+            <strong>AGENT COMPOSE</strong>
+            <small>RUN CONTROL PLANE</small>
+          </span>
+        </a>
+      </div>
+      <div class="topbar-center">
+        <span id="service-status" class="status-pill neutral">
+          <span class="status-dot"></span>
+          检查服务
+        </span>
+        <span id="release-label" class="mono-chip">release: -</span>
+      </div>
+      <div class="topbar-actions">
+        <a id="prometheus-link" class="tool-button" href="http://127.0.0.1:9090" target="_blank" rel="noreferrer">
+          <i data-lucide="chart-no-axes-combined"></i>
+          Prometheus
+        </a>
+        <a id="grafana-link" class="tool-button primary-ghost" href="http://127.0.0.1:8765" target="_blank" rel="noreferrer">
+          <i data-lucide="gauge"></i>
+          Grafana
+        </a>
+        <button id="theme-button" class="icon-button" type="button" aria-label="切换主题">
+          <i data-lucide="sun"></i>
+        </button>
+        <button id="inspector-button" class="icon-button" type="button" aria-label="切换详情栏">
+          <i data-lucide="panel-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <div id="error-banner" class="error-banner" role="alert" hidden>
+      <span id="error-text"></span>
+      <button id="error-close" type="button" class="icon-button" aria-label="关闭错误">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <main class="workspace-shell">
+      <div id="mobile-scrim" class="mobile-scrim"></div>
+
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-head">
+          <button id="new-run-button" class="new-run-button" type="button">
+            <i data-lucide="plus"></i>
+            新建对话
+            <span class="shortcut">N</span>
+          </button>
+          <label class="search-box">
+            <i data-lucide="search"></i>
+            <input id="run-search" type="search" placeholder="搜索对话 / tenant" autocomplete="off" />
+          </label>
+        </div>
+        <div class="sidebar-section-label">
+          <span>最近会话</span>
+          <span id="run-count" class="counter">0</span>
+        </div>
+        <div id="run-list" class="run-list" aria-live="polite"></div>
+        <div class="sidebar-footer">
+          <span class="status-dot"></span>
+          <span>local workspace</span>
+          <a href="http://127.0.0.1:8080/metrics" target="_blank" rel="noreferrer">metrics</a>
+        </div>
+      </aside>
+
+      <section class="main-panel">
+        <div class="main-header">
+          <div>
+            <span class="eyebrow">PI AGENT TEST CONSOLE</span>
+            <h1>多轮对话，验证真实 Agent 链路</h1>
+          </div>
+          <div class="header-meta">
+            <span id="uptime-label" class="mono-chip">uptime: -</span>
+            <span id="health-time" class="mono-chip">health: -</span>
+          </div>
+        </div>
+
+        <section class="session-bar">
+          <div class="session-copy">
+            <span class="session-label">CURRENT SESSION</span>
+            <strong id="session-title">新对话</strong>
+            <code id="session-id">尚未创建</code>
+          </div>
+          <span id="session-run-count" class="mono-chip">0 runs</span>
+        </section>
+
+        <section class="conversation-panel">
+          <div id="conversation-thread" class="conversation-thread">
+            <div id="conversation-empty" class="conversation-empty">
+              <span class="empty-icon"><i data-lucide="messages-square"></i></span>
+              <h2>开始一段多轮对话</h2>
+              <p>后续消息会沿用同一个 session_id，并把已完成回合作为上下文。</p>
+            </div>
+          </div>
+        </section>
+
+        <form id="run-form" class="composer">
+          <div class="composer-top">
+            <label class="field">
+              <span>Tenant</span>
+              <input id="tenant-input" name="tenant" value="demo" maxlength="64" pattern="[A-Za-z0-9_\-]+" required />
+            </label>
+            <div class="mode-switch" role="group" aria-label="执行模式">
+              <button class="mode-option active" type="button" data-mode="stream" aria-pressed="true">
+                <i data-lucide="radio"></i>
+                实时
+              </button>
+              <button class="mode-option" type="button" data-mode="async" aria-pressed="false">
+                <i data-lucide="timer"></i>
+                异步
+              </button>
+              <button class="mode-option" type="button" data-mode="sync" aria-pressed="false">
+                <i data-lucide="play"></i>
+                同步
+              </button>
+            </div>
+            <div class="mode-switch" role="group" aria-label="工作模式">
+              <button class="intent-option active" type="button" data-intent="chat" aria-pressed="true">
+                <i data-lucide="messages-square"></i>
+                对话
+              </button>
+              <button class="intent-option" type="button" data-intent="task" aria-pressed="false">
+                <i data-lucide="list-checks"></i>
+                任务
+              </button>
+            </div>
+          </div>
+          <div class="attachment-controls">
+            <button id="file-picker-button" class="attachment-button" type="button">
+              <i data-lucide="paperclip"></i>
+              文件
+            </button>
+            <input
+              id="file-input"
+              type="file"
+              accept=".md,.markdown,.txt,.docx,.pdf,.html,.htm,.csv,.json,.xml"
+              multiple
+              hidden
+            />
+            <input
+              id="web-url-input"
+              type="url"
+              maxlength="4000"
+              placeholder="https://example.com/page"
+              autocomplete="off"
+            />
+            <button id="web-url-add" class="attachment-button" type="button">
+              <i data-lucide="globe-2"></i>
+              网页
+            </button>
+          </div>
+          <div id="attachment-list" class="attachment-list" hidden></div>
+          <label class="prompt-field">
+            <span class="sr-only">Agent input</span>
+            <textarea
+              id="input-field"
+              name="input"
+              rows="5"
+              maxlength="10000"
+              placeholder="输入消息，上传文件/网页，或点击 Skill 插入 @引用…"
+            ></textarea>
+          </label>
+          <div class="composer-footer">
+            <div class="composer-hints">
+              <span><i data-lucide="command"></i> Enter 提交</span>
+              <span id="request-template" class="mono-chip">request: 自动生成</span>
+            </div>
+            <button id="submit-button" class="run-button" type="submit">
+              <span class="run-button-label">发送消息</span>
+              <i data-lucide="arrow-up-right"></i>
+            </button>
+          </div>
+        </form>
+
+        <section class="run-panel">
+          <div class="run-panel-head">
+            <nav class="tabs" aria-label="运行结果视图">
+              <button class="tab active" type="button" data-tab="response">响应</button>
+              <button class="tab" type="button" data-tab="events">事件 <span id="event-count">0</span></button>
+              <button class="tab" type="button" data-tab="raw">原始数据</button>
+            </nav>
+            <div id="live-indicator" class="live-indicator" hidden>
+              <span class="pulse-dot"></span>
+              LIVE
+            </div>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <span class="empty-icon"><i data-lucide="scan-search"></i></span>
+            <h2>还没有选中的 Run</h2>
+            <p>提交一条请求，或从左侧选择一个历史运行。</p>
+          </div>
+
+          <div id="run-content" hidden>
+            <div class="metrics-strip">
+              <div class="metric">
+                <span>状态</span>
+                <strong id="metric-status">-</strong>
+              </div>
+              <div class="metric">
+                <span>耗时</span>
+                <strong id="metric-duration">-</strong>
+              </div>
+              <div class="metric">
+                <span>Token</span>
+                <strong id="metric-tokens">-</strong>
+              </div>
+              <div class="metric">
+                <span>模型</span>
+                <strong id="metric-model">-</strong>
+              </div>
+            </div>
+
+            <div id="view-response" class="view-panel">
+              <pre id="response-output" class="response-output"></pre>
+            </div>
+            <div id="view-events" class="view-panel" hidden>
+              <div id="event-timeline" class="event-timeline"></div>
+            </div>
+            <div id="view-raw" class="view-panel" hidden>
+              <pre id="raw-output" class="raw-output"></pre>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside id="inspector" class="inspector">
+        <div class="inspector-head">
+          <div>
+            <span class="eyebrow">INSPECTOR</span>
+            <h2>运行详情</h2>
+          </div>
+          <button id="inspector-close" class="icon-button mobile-only" type="button" aria-label="关闭详情栏">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="inspector-body">
+          <section class="inspector-section">
+            <div class="section-title">
+              <span>标识</span>
+              <i data-lucide="fingerprint"></i>
+            </div>
+            <div id="id-list" class="kv-list"></div>
+          </section>
+          <section class="inspector-section">
+            <div class="section-title">
+              <span>运行信息</span>
+              <i data-lucide="info"></i>
+            </div>
+            <div id="run-info" class="kv-list"></div>
+          </section>
+          <section id="plan-section" class="inspector-section" hidden>
+            <div class="section-title">
+              <span>执行计划</span>
+              <i data-lucide="list-checks"></i>
+            </div>
+            <div id="plan-list" class="plan-list"></div>
+          </section>
+          <section class="inspector-section">
+            <div class="section-title">
+              <span>Agent 能力</span>
+              <i data-lucide="blocks"></i>
+            </div>
+            <div id="capability-list" class="capability-list"></div>
+            <div id="capability-limits" class="capability-limits"></div>
+          </section>
+          <section class="inspector-section">
+            <div class="section-title">
+              <span>服务入口</span>
+              <i data-lucide="external-link"></i>
+            </div>
+            <div class="service-links">
+              <a href="http://127.0.0.1:8080/health" target="_blank" rel="noreferrer">
+                Agent health
+                <i data-lucide="arrow-up-right"></i>
+              </a>
+              <a href="http://127.0.0.1:8080/metrics" target="_blank" rel="noreferrer">
+                Agent metrics
+                <i data-lucide="arrow-up-right"></i>
+              </a>
+              <a href="http://127.0.0.1:4000/health/liveliness" target="_blank" rel="noreferrer">
+                Gateway health
+                <i data-lucide="arrow-up-right"></i>
+              </a>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <script src="/ui/vendor/lucide.min.js"></script>
+    <script type="module" src="/ui/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: AgentCompose Targets
+    folder: AgentCompose
+    interval: 1m
+    rules:
+      - uid: agentcompose-gateway-down
+        title: AgentCompose Gateway Target Down
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: agent-prometheus
+            model:
+              editorMode: code
+              expr: up{job="gateway"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: LiteLLM Gateway metrics target is down
+
+      - uid: agentcompose-agent-down
+        title: AgentCompose Agent Target Down
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: agent-prometheus
+            model:
+              editorMode: code
+              expr: up{job="agent"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Agent metrics target is down
